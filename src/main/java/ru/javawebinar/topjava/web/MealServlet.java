@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -13,7 +14,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class MealServlet extends HttpServlet {
+    private static final Logger log = getLogger(MealServlet.class);
     private MealRepository repository = new InMemoryMealRepository();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,11 +37,13 @@ public class MealServlet extends HttpServlet {
                 }
                 case "delete" -> {
                     repository.delete(Integer.parseInt(id));
+                    log.debug("Delete meal with id = {}", id);
                     resp.sendRedirect("meals");
                 }
             }
         }
         else {
+            log.debug("forward to meals");
             req.setAttribute("mealsList", MealsUtil.filteredByCycles(repository.getAll(), null, null, MealsUtil.CALORIES_PER_DAY));
             req.getRequestDispatcher(forwardPage).forward(req,resp);
         }
@@ -62,7 +68,10 @@ public class MealServlet extends HttpServlet {
             meal.setId(Integer.parseInt(id));
         }
 
-        repository.create(meal);
+
+        Meal editMeal = repository.create(meal);
+
+        log.info("Create/Update {}", editMeal);
 
         resp.sendRedirect("meals");
     }

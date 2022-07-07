@@ -34,11 +34,10 @@ public class InMemoryMealRepository implements MealRepository{
         if (meal.getId() == null) {
             meal.setId(id.getAndIncrement());
         }
-        else {
-            return update(meal);
-        }
 
-        return meals.put(meal.getId(), meal);
+        meals.put(meal.getId(), meal);
+
+        return meal;
     }
 
     @Override
