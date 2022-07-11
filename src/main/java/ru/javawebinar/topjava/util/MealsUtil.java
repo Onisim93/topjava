@@ -1,7 +1,8 @@
 package ru.javawebinar.topjava.util;
 
+import org.springframework.lang.Nullable;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.to.MealTo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,5 +51,22 @@ public class MealsUtil {
 
     private static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+    }
+
+    public static boolean getBetweenHalfOpen(LocalDateTime mealDateTime, @Nullable LocalDate startDate, @Nullable LocalDate endDate, @Nullable LocalTime startTime, @Nullable LocalTime endTime) {
+        boolean result = true;
+        if (startDate != null) {
+            result = mealDateTime.toLocalDate().isAfter(startDate.minusDays(1));
+        }
+        if (endDate != null) {
+            result = mealDateTime.toLocalDate().isBefore(endDate.plusDays(1));
+        }
+        if (startTime != null) {
+            result = mealDateTime.toLocalTime().isAfter(startTime.minusMinutes(1));
+        }
+        if (endTime != null) {
+            result = mealDateTime.toLocalTime().isBefore(endTime);
+        }
+        return result;
     }
 }
