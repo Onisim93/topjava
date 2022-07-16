@@ -25,7 +25,7 @@ public abstract class UserServiceTest extends BaseEntityTest{
     }
 
     @Autowired
-    private UserService service;
+    protected UserService service;
 
     @Test
     public void create() {

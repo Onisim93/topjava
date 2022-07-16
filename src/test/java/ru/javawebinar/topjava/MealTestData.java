@@ -4,6 +4,8 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.time.LocalDateTime.of;
@@ -11,6 +13,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
     public static final MatcherFactory.Matcher<Meal> MEAL_MATCHER = MatcherFactory.usingIgnoringFieldsComparator("user");
+    public static final MatcherFactory.Matcher<Meal> MEAL_MATCHER_WITH_USER = MatcherFactory.usingIgnoringFieldsComparator("user.registered", "user.roles", "user.meals");
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 3;
@@ -34,5 +37,19 @@ public class MealTestData {
 
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "Обновленный завтрак", 200);
+    }
+
+    public static List<Meal> getUserSortedMeals() {
+        List<Meal> result = new ArrayList<>(){{
+            add(meal1);
+            add(meal2);
+            add(meal3);
+            add(meal4);
+            add(meal5);
+            add(meal6);
+            add(meal7);
+        }};
+        result.sort(Comparator.comparing(Meal::getDateTime));
+        return result;
     }
 }
