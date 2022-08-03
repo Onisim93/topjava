@@ -39,7 +39,9 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenHalfOpen() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "by-date?start=2020-01-30T00:00:01&end=2020-01-30T23:00:00"))
+        String withAllParameters = REST_URL + "by-date?startDate=2020-01-30&startTime=00:00:01&endDate=2020-01-30&endTime=23:00:00";
+        String onlyDate = REST_URL + "by-date?startDate=2020-01-30&endDate=2020-01-30";
+        perform(MockMvcRequestBuilders.get(onlyDate))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
