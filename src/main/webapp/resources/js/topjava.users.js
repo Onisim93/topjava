@@ -5,6 +5,18 @@ const ctx = {
     ajaxUrl: userAjaxUrl
 };
 
+function activateUser(activate, id) {
+    $.ajax({
+        type: 'POST',
+        url: userAjaxUrl + id,
+        data: {
+            activate: activate
+        }
+    }).done(function () {
+        updateTable();
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
