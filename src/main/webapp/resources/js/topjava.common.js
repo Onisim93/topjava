@@ -13,8 +13,10 @@ function makeEditable(datatableApi) {
 }
 
 function add() {
+    console.log(i18n);
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
+    form.find("input[name='calories'").val(0);
     $("#editRow").modal();
 }
 
