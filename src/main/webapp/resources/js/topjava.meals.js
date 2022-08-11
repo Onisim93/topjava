@@ -18,7 +18,7 @@ function clearFilter() {
 }
 
 $("#dateTime").datetimepicker({
-    format: "Y-m-d H:i"
+    format: 'Y-m-d H:i'
 })
 $("#startDate").datetimepicker({
     timepicker: false,
@@ -54,7 +54,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (date, type, row) {
                         if (type === 'display') {
-                            return date.replace('T', ' ');
+                            return date.replace('T', ' ').substring(0, 16);
                         }
                         return date;
                     }

@@ -16,7 +16,6 @@ function add() {
     console.log(i18n);
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
-    form.find("input[name='calories'").val(0);
     $("#editRow").modal();
 }
 
@@ -25,7 +24,12 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            form.find("input[name='" + key + "']").val(value);
+            if (key === "dateTime") {
+                form.find("input[name='" + key + "']").val(value.replace('T', ' ').substring(0, 16));
+            }
+            else {
+                form.find("input[name='" + key + "']").val(value);
+            }
         });
         $('#editRow').modal();
     });
