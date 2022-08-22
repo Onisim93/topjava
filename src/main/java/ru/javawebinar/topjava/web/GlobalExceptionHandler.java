@@ -16,6 +16,18 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /*@ExceptionHandler(DataIntegrityViolationException.class)
+    public ModelAndView conflict(DataIntegrityViolationException e, HttpServletRequest req, ModelMap model, BindingResult result) {
+        ModelAndView mav = new ModelAndView("profile", model);
+        if (req.getRequestURL().toString().contains("?register=true")) {
+           model.addAttribute("register", true);
+        }
+        result.rejectValue("email", "common.duplicate_email");
+        mav.addAllObjects(model);
+
+        return mav;
+    }*/
+
     @ExceptionHandler(Exception.class)
     public ModelAndView defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         log.error("Exception at request " + req.getRequestURL(), e);

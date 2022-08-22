@@ -83,6 +83,7 @@ function closeNoty() {
     }
 }
 
+
 function successNoty(key) {
     closeNoty();
     new Noty({
@@ -110,7 +111,7 @@ function failNoty(jqXHR) {
     var errorInfo = jqXHR.responseJSON;
     failedNote = new Noty({
         text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status +
-            "<br>" + errorInfo.type + "<br>" + errorInfo.detail,
+            "<br>" + i18n["common." + errorInfo.type] + "<br>" + errorInfo.detail,
         type: "error",
         layout: "bottomRight"
     });

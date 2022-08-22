@@ -19,6 +19,11 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -26,6 +31,23 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+    protected static final String EXCEPTION_DUPLICATE_EMAIL = "users_unique_email_idx";
+    protected static final String EXCEPTION_DUPLICATE_DATE_TIME = "meals_unique_user_datetime_idx";
+
+    protected static final Map<String, String> CONSTRAINT_MAP = new HashMap<>(){{
+        put(EXCEPTION_DUPLICATE_EMAIL, "User with this email already exists");
+        put(EXCEPTION_DUPLICATE_DATE_TIME, "Meal with this date already exist");
+    }};
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorInfo constraintsError(HttpServletRequest request, ConstraintViolationException e) {
+        StringBuilder details = new StringBuilder();
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            details.append(violation.getPropertyPath().toString()).append(" ").append(violation.getMessage()).append("<br>");
+        }
+        return new ErrorInfo(request.getRequestURL(), VALIDATION_ERROR, details.toString());
+    }
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -37,7 +59,14 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+        String message = e.getMessage();
+        String errorMessage = Objects.requireNonNull(e.getRootCause()).getMessage().toLowerCase();
+        for (Map.Entry<String, String> entry : CONSTRAINT_MAP.entrySet()) {
+            if (errorMessage.contains(entry.getKey())) {
+                message = entry.getValue();
+            }
+        }
+        return new ErrorInfo(req.getRequestURL(), DATA_ERROR, message);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
@@ -46,11 +75,11 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    /*@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErrorInfo handleError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, true, APP_ERROR);
-    }
+    }*/
 
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
